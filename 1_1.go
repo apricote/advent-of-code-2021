@@ -7,6 +7,14 @@ import (
 )
 
 func GetMeasurementIncreases(input string) (increases int) {
+	measurements := parseDay1Input(input)
+
+	increases = getRawMeasurementIncreases(measurements)
+
+	return
+}
+
+func parseDay1Input(input string) []int {
 	// Convert to string slice
 	measurementsRaw := strings.Split(input, "\n")
 
@@ -20,6 +28,10 @@ func GetMeasurementIncreases(input string) (increases int) {
 		measurements = append(measurements, integerValue)
 	}
 
+	return measurements
+}
+
+func getRawMeasurementIncreases(measurements []int) (increases int) {
 	for i, current := range measurements {
 		if i == 0 {
 			continue
