@@ -15,19 +15,7 @@ const (
 func GetPowerConsumption(input string) uint64 {
 	inputRows := strings.Split(input, "\n")
 
-	// Only works because or input is only "0" and "1"
-	// Breaks with utf-8
-	diagnosticReportLength := len(inputRows[0])
-
-	countOnes := make([]int, diagnosticReportLength)
-
-	for _, inputRow := range inputRows {
-		for i, digit := range inputRow {
-			if digit == BitOn {
-				countOnes[i] += 1
-			}
-		}
-	}
+	countOnes := CountOnes(inputRows)
 
 	var gammaBuffer bytes.Buffer
 	var epsilonBuffer bytes.Buffer
@@ -53,4 +41,22 @@ func GetPowerConsumption(input string) uint64 {
 	}
 
 	return gamma * epsilon
+}
+
+func CountOnes(inputRows []string) []int {
+	// Only works because or input is only "0" and "1"
+	// Breaks with utf-8
+	diagnosticReportLength := len(inputRows[0])
+
+	countOnes := make([]int, diagnosticReportLength)
+
+	for _, inputRow := range inputRows {
+		for i, digit := range inputRow {
+			if digit == BitOn {
+				countOnes[i] += 1
+			}
+		}
+	}
+
+	return countOnes
 }
