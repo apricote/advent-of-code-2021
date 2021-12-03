@@ -29,3 +29,11 @@ func GetDay2ExampleInput() string {
 func GetDay2Input() string {
 	return GetInput("input_2.txt")
 }
+
+func GetDay3ExampleInput() string {
+	return GetInput("input_3_example.txt")
+}
+
+func GetDay3Input() string {
+	return GetInput("input_3.txt")
+}
