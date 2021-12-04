@@ -37,3 +37,11 @@ func GetDay3ExampleInput() string {
 func GetDay3Input() string {
 	return GetInput("input_3.txt")
 }
+
+func GetDay4ExampleInput() string {
+	return GetInput("input_4_example.txt")
+}
+
+func GetDay4Input() string {
+	return GetInput("input_4.txt")
+}
