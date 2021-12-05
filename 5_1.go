@@ -35,6 +35,10 @@ func GetOverlappingVents(input string) int {
 
 	linePoints := GetAllPointsInLines(nonDiagonalLineSegments)
 
+	return CalculateHighRiskPoints(linePoints)
+}
+
+func CalculateHighRiskPoints(linePoints []Coord2D) int {
 	linePointFrequency := make(map[string]int)
 	for _, linePoint := range linePoints {
 
@@ -55,6 +59,20 @@ func GetOverlappingVents(input string) int {
 	return highRiskPoints
 }
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return a * -1
+	}
+	return a
+}
+
 func GetAllPointsInLines(lineSegments []Line) []Coord2D {
 	linePoints := make([]Coord2D, 0, len(lineSegments))
 
@@ -65,9 +83,17 @@ func GetAllPointsInLines(lineSegments []Line) []Coord2D {
 			X: lineSegment.End.X - lineSegment.Start.X,
 			Y: lineSegment.End.Y - lineSegment.Start.Y,
 		}
+		stepAmount := max(abs(lineVector.X), abs(lineVector.Y))
 
-		for i := 0.0; i <= lineLength; i++ {
-			traveledDistance := i / lineLength
+		// hack for diagonal lines
+		stepDistance := 1.0
+		isDiagonal := lineSegment.Start.X != lineSegment.End.X && lineSegment.Start.Y != lineSegment.End.Y
+		if isDiagonal {
+			stepDistance = math.Sqrt(2)
+		}
+
+		for steps := 0; steps <= stepAmount; steps++ {
+			traveledDistance := float64(steps) * stepDistance / lineLength
 
 			newPoint := Coord2D{
 				X: lineSegment.Start.X + int(math.Round(traveledDistance*float64(lineVector.X))),
