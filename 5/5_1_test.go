@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestGetOverlappingVents(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestGetOverlappingVents(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay5ExampleInput(), want: 5},
-		{input: GetDay5Input(), want: 6397},
+		{input: util.GetExampleInput(), want: 5},
+		{input: util.GetInput(), want: 6397},
 	}
 
 	for _, tc := range tests {

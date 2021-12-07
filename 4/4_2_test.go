@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestGetFinalBingoScoreLosingBoard(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestGetFinalBingoScoreLosingBoard(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay4ExampleInput(), want: 1924},
-		{input: GetDay4Input(), want: 23670},
+		{input: util.GetExampleInput(), want: 1924},
+		{input: util.GetInput(), want: 23670},
 	}
 
 	for _, tc := range tests {

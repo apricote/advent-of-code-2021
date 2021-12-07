@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestGetSlidingWindowMeasurementIncreases(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestGetSlidingWindowMeasurementIncreases(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay1ExampleInput(), want: 5},
-		{input: GetDay1Input(), want: 1275},
+		{input: util.GetExampleInput(), want: 5},
+		{input: util.GetInput(), want: 1275},
 	}
 
 	for _, tc := range tests {

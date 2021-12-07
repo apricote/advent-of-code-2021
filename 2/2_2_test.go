@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestGetDivePositionWithAim(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestGetDivePositionWithAim(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay2ExampleInput(), want: 900},
-		{input: GetDay2Input(), want: 1942068080},
+		{input: util.GetExampleInput(), want: 900},
+		{input: util.GetInput(), want: 1942068080},
 	}
 
 	for _, tc := range tests {

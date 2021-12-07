@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestGetLifeSupportRating(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestGetLifeSupportRating(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay3ExampleInput(), want: 230},
-		{input: GetDay3Input(), want: 7041258},
+		{input: util.GetExampleInput(), want: 230},
+		{input: util.GetInput(), want: 7041258},
 	}
 
 	for _, tc := range tests {

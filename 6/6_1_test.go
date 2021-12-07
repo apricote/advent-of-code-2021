@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/apricote/advent-of-code-2021/util"
+)
 
 func TestCountLanternfish(t *testing.T) {
 	type test struct {
@@ -9,8 +13,8 @@ func TestCountLanternfish(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: GetDay6ExampleInput(), want: 5934},
-		{input: GetDay6Input(), want: 352151},
+		{input: util.GetExampleInput(), want: 5934},
+		{input: util.GetInput(), want: 352151},
 	}
 
 	for _, tc := range tests {
