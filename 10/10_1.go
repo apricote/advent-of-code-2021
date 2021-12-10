@@ -12,7 +12,7 @@ func GetSyntaxErrorScore(input string) int {
 	points := 0
 
 	for _, line := range lines {
-		illegalCharacter := GetIllegalCharacter(line)
+		_, illegalCharacter := ParseLine(line)
 		points += GetIllegalCharacterPoints(illegalCharacter)
 	}
 
@@ -30,7 +30,7 @@ func ParseInput(input string) [][]string {
 }
 
 // Returns the first illegal character or "" in case the line is incomplete
-func GetIllegalCharacter(line []string) string {
+func ParseLine(line []string) (Stack, string) {
 	stack := Stack{}
 
 	for _, token := range line {
@@ -49,30 +49,30 @@ func GetIllegalCharacter(line []string) string {
 			stack, lastElement = stack.Pop()
 
 			if lastElement != "(" {
-				return token
+				return stack, token
 			}
 		case "]":
 			stack, lastElement = stack.Pop()
 
 			if lastElement != "[" {
-				return token
+				return stack, token
 			}
 		case "}":
 			stack, lastElement = stack.Pop()
 
 			if lastElement != "{" {
-				return token
+				return stack, token
 			}
 		case ">":
 			stack, lastElement = stack.Pop()
 
 			if lastElement != "<" {
-				return token
+				return stack, token
 			}
 		}
 	}
 
-	return ""
+	return stack, ""
 }
 
 func GetIllegalCharacterPoints(illegalChar string) int {
