@@ -82,3 +82,6 @@ func TestSolveCurrentDayWithTwist(t *testing.T) {
 EOF
 
 touch input_example.txt input.txt
+
+git add ${DAY}/
+git commit -m "bootstrap day ${DAY}"
