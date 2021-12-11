@@ -83,5 +83,5 @@ EOF
 
 touch input_example.txt input.txt
 
-git add ${DAY}/
+git add ./
 git commit -m "bootstrap day ${DAY}"
