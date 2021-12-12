@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func getInput(path string) string {
+func GetInputFromPath(path string) string {
 	dat, err := os.ReadFile(path)
 	if err != nil {
 		log.Panicf("error while reading %s", path)
@@ -15,9 +15,9 @@ func getInput(path string) string {
 }
 
 func GetExampleInput() string {
-	return getInput("input_example.txt")
+	return GetInputFromPath("input_example.txt")
 }
 
 func GetInput() string {
-	return getInput("input.txt")
+	return GetInputFromPath("input.txt")
 }
