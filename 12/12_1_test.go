@@ -6,19 +6,21 @@ import (
 	"github.com/apricote/advent-of-code-2021/util"
 )
 
-func TestSolveCurrentDay(t *testing.T) {
+func TestGetCavePaths(t *testing.T) {
 	type test struct {
 		input string
 		want  int
 	}
 
 	tests := []test{
-		{input: util.GetExampleInput(), want: 0},
-		//{input: util.GetInput(), want: 0},
+		{input: util.GetInputFromPath("input_example1.txt"), want: 10},
+		{input: util.GetInputFromPath("input_example2.txt"), want: 19},
+		{input: util.GetInputFromPath("input_example3.txt"), want: 226},
+		{input: util.GetInput(), want: 3485},
 	}
 
 	for _, tc := range tests {
-		got := SolveCurrentDay(tc.input)
+		got := GetCavePaths(tc.input)
 
 		if tc.want != got {
 			t.Errorf("Expected %d but got %d", tc.want, got)
