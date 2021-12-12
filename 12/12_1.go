@@ -20,7 +20,15 @@ func GetCavePaths(input string) int {
 	caves := ParseInput(input)
 
 	isAcceptableNextCave := func(path CavePath, nextCave *Cave) bool {
-		return !nextCave.Big && ContainsCave(path, nextCave)
+		if nextCave.Big {
+			return true
+		}
+
+		if ContainsCaveTimes(path, nextCave) == 0 {
+			return true
+		}
+
+		return false
 	}
 
 	paths := GetPossiblePaths(caves, isAcceptableNextCave)
@@ -90,7 +98,7 @@ func GetPossiblePaths(caveMap CaveMap, isAcceptableNextCave NextCaveDecider) []C
 				}
 
 				// If next cave is small, check that it's not already in path
-				if isAcceptableNextCave(viablePath, nextCave) {
+				if !isAcceptableNextCave(viablePath, nextCave) {
 					// Skip adding to viablePaths
 					continue
 				}
@@ -104,14 +112,16 @@ func GetPossiblePaths(caveMap CaveMap, isAcceptableNextCave NextCaveDecider) []C
 	return endingPaths
 }
 
-func ContainsCave(caves CavePath, cave *Cave) bool {
+func ContainsCaveTimes(caves CavePath, cave *Cave) int {
+	count := 0
+
 	for _, caveB := range caves {
 		if cave.IsEqual(*caveB) {
-			return true
+			count += 1
 		}
 	}
 
-	return false
+	return count
 }
 
 func (c Cave) IsEqual(b Cave) bool {
