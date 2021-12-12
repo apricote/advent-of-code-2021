@@ -14,7 +14,7 @@ func TestGetCompletionScore(t *testing.T) {
 
 	tests := []test{
 		{input: util.GetExampleInput(), want: 288957},
-		{input: util.GetInput(), want: 0},
+		{input: util.GetInput(), want: 2360030859},
 	}
 
 	for _, tc := range tests {
