@@ -1,27 +1,36 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/apricote/advent-of-code-2021/util"
 	//"github.com/apricote/advent-of-code-2021/util"
 )
 
-func TestSolveCurrentDayWithTwist(t *testing.T) {
+func TestGetEightLetterCode(t *testing.T) {
 	type test struct {
 		input string
-		want  int
+		want  string
 	}
 
 	tests := []test{
 		//{input: util.GetExampleInput(), want: 0},
-		//{input: util.GetInput(), want: 0},
+		{input: util.GetInput(), want: `
+###...##..####.###...##..####..##..###.
+#..#.#..#....#.#..#.#..#.#....#..#.#..#
+###..#......#..#..#.#....###..#..#.###.
+#..#.#.....#...###..#....#....####.#..#
+#..#.#..#.#....#.#..#..#.#....#..#.#..#
+###...##..####.#..#..##..####.#..#.###.
+`},
 	}
 
 	for _, tc := range tests {
-		got := SolveCurrentDayWithTwist(tc.input)
+		got := GetEightLetterCode(tc.input)
 
-		if tc.want != got {
-			t.Errorf("Expected %d but got %d", tc.want, got)
+		if strings.TrimSpace(tc.want) != got {
+			t.Errorf("Expected %v but got %v", tc.want, got)
 		}
 	}
 }
