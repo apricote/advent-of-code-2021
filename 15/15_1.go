@@ -53,6 +53,9 @@ func Dijkstra(riskLevels [][]int, source [2]int, destination [2]int) int {
 
 	dist := map[[2]int]int{}
 
+	maxX := len(riskLevels[0]) - 1
+	maxY := len(riskLevels) - 1
+
 	// for each vertex v in Graph:
 	for y, row := range riskLevels {
 		for x := range row {
@@ -76,7 +79,6 @@ func Dijkstra(riskLevels [][]int, source [2]int, destination [2]int) int {
 
 	// while Q is not empty:
 	for Q.Len() > 0 {
-
 		// u ← vertex in Q with min dist[u]
 		// remove u from Q
 		u := heap.Pop(&Q).(*Item)
@@ -87,11 +89,7 @@ func Dijkstra(riskLevels [][]int, source [2]int, destination [2]int) int {
 		}
 
 		// for each neighbor v of u still in Q:
-		for _, v := range GetPossibleNeighbors(u.value) {
-			if !Q.Includes(v) {
-				continue
-			}
-
+		for _, v := range GetPossibleNeighbors(u.value, maxX, maxY) {
 			// alt ← dist[u] + length(u, v)
 			alt := dist[u.value] + riskLevels[v[0]][v[1]]
 
@@ -100,8 +98,10 @@ func Dijkstra(riskLevels [][]int, source [2]int, destination [2]int) int {
 				// dist[v] ← alt
 				dist[v] = alt
 
-				vItem := Q.Find(v)
-				Q.update(vItem, v, dist[v])
+				if vItem := Q.Find(v); vItem != nil {
+					Q.update(vItem, v, dist[v])
+				}
+
 			}
 		}
 	}
@@ -109,7 +109,7 @@ func Dijkstra(riskLevels [][]int, source [2]int, destination [2]int) int {
 	return dist[destination]
 }
 
-func GetPossibleNeighbors(coords [2]int) [][2]int {
+func GetPossibleNeighbors(coords [2]int, maxX, maxY int) [][2]int {
 	neighborOffsets := [][2]int{
 		{0, 1},
 		{1, 0},
@@ -120,7 +120,14 @@ func GetPossibleNeighbors(coords [2]int) [][2]int {
 	neighbors := [][2]int{}
 
 	for _, offset := range neighborOffsets {
-		neighbors = append(neighbors, [2]int{coords[0] + offset[0], coords[1] + offset[1]})
+		newX := coords[0] + offset[0]
+		newY := coords[1] + offset[1]
+
+		if newX < 0 || newX > maxX || newY < 0 || newY > maxY {
+			continue
+		}
+
+		neighbors = append(neighbors, [2]int{newX, newY})
 	}
 
 	return neighbors
