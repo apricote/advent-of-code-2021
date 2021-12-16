@@ -7,20 +7,56 @@ import (
 
 type Packet interface {
 	Version() int
-	Type() int
+	Type() PacketType
 }
 
 type packet struct {
 	_version int
-	_type    int
+	_type    PacketType
+}
+
+type PacketType int
+
+const (
+	PacketTypeSum         PacketType = iota
+	PacketTypeProduct     PacketType = iota
+	PacketTypeMinimum     PacketType = iota
+	PacketTypeMaximum     PacketType = iota
+	PacketTypeLiteral     PacketType = iota
+	PacketTypeGreaterThan PacketType = iota
+	PacketTypeLessThan    PacketType = iota
+	PacketTypeEqualTo     PacketType = iota
+)
+
+func ParsePacketType(typeInt int) (PacketType, error) {
+	switch typeInt {
+	case int(PacketTypeSum):
+		return PacketTypeSum, nil
+	case int(PacketTypeProduct):
+		return PacketTypeProduct, nil
+	case int(PacketTypeMinimum):
+		return PacketTypeMinimum, nil
+	case int(PacketTypeMaximum):
+		return PacketTypeMaximum, nil
+	case int(PacketTypeLiteral):
+		return PacketTypeLiteral, nil
+	case int(PacketTypeGreaterThan):
+		return PacketTypeGreaterThan, nil
+	case int(PacketTypeLessThan):
+		return PacketTypeLessThan, nil
+	case int(PacketTypeEqualTo):
+		return PacketTypeEqualTo, nil
+	}
+
+	return 0, fmt.Errorf("unable to parse PacketType: %v", typeInt)
 }
 
 func (p packet) Version() int {
 	return p._version
 }
 
-func (p packet) Type() int {
-	return p._version
+func (p packet) Type() PacketType {
+	return p._type
 }
 
 type PacketLiteral struct {
@@ -54,13 +90,18 @@ func ParsePacket(data []byte, offset int) (Packet, int, error) {
 		return packet{}, 0, err
 	}
 
+	packetType, err := ParsePacketType(_type)
+	if err != nil {
+		return packet{}, 0, err
+	}
+
 	packet := packet{
 		_version: _version,
-		_type:    _type,
+		_type:    packetType,
 	}
 
 	switch packet._type {
-	case 4:
+	case PacketTypeLiteral:
 		// Literal
 		return ParsePacketLiteral(data, offset, packet)
 	default:

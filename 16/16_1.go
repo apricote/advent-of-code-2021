@@ -33,7 +33,3 @@ func SumVersionNumbers(p Packet) int {
 
 	return sum
 }
-
-func ParseInput(input string) ([]byte, error) {
-	return hex.DecodeString(input)
-}
