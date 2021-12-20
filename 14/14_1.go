@@ -3,24 +3,25 @@ package main
 import (
 	"math"
 	"strings"
-	"unicode/utf8"
 )
 
 type Input struct {
 	Template []rune
+	Pairs    Pairs
 	Rules    Rules
 }
 
-type Rules map[string]rune
+type Rules map[string][2]string
+type Pairs map[string]int
 
 func GetCommonElementCount(inputString string) int {
 	input := ParseInput(inputString)
 
 	for i := 0; i < 10; i++ {
-		input.Template = ExpandTemplate(input.Template, input.Rules)
+		input.Pairs = ExpandTemplate(input.Pairs, input.Rules)
 	}
 
-	return GetLeastMostValue(input.Template)
+	return GetLeastMostValue(input.Template, input.Pairs)
 }
 
 func ParseInput(input string) Input {
@@ -37,53 +38,82 @@ func ParseInput(input string) Input {
 	for _, ruleString := range strings.Split(sections[1], "\n") {
 		ruleSections := strings.Split(ruleString, " -> ")
 
-		insert, _ := utf8.DecodeRuneInString(ruleSections[1])
+		insert := string(ruleSections[1][0])
 
-		rules[ruleSections[0]] = insert
+		rules[ruleSections[0]] = [2]string{
+			string(ruleSections[0][0]) + insert,
+			insert + string(ruleSections[0][1]),
+		}
+	}
+
+	// Pairs
+	pairs := Pairs{}
+	for i, cur := range template {
+		if i == len(template)-1 {
+			break
+		}
+
+		next := template[i+1]
+
+		pairs[string(cur)+string(next)] += 1
 	}
 
 	return Input{
 		Template: template,
 		Rules:    rules,
+		Pairs:    pairs,
 	}
 }
 
-func ExpandTemplate(tpl []rune, rules Rules) []rune {
-	newTpl := []rune{}
+func ExpandTemplate(pairs Pairs, rules Rules) Pairs {
+	newPairs := Pairs{}
 
-	for i, cur := range tpl {
-		newTpl = append(newTpl, cur)
+	for pair, count := range pairs {
 
-		if i == len(tpl)-1 {
-			break
-		}
+		resultingPairs, ok := rules[pair]
 
-		// Not last rune, let's check upcoming pair
-		next := tpl[i+1]
-
-		insertElement, ok := rules[string(cur)+string(next)]
-
-		if ok {
-			// matching rule
-			newTpl = append(newTpl, insertElement)
+		if !ok {
+			newPairs[pair] += count
+		} else {
+			for _, newPair := range resultingPairs {
+				newPairs[newPair] += count
+			}
 		}
 	}
 
-	return newTpl
+	return newPairs
 }
 
-func CountElement(tpl []rune) map[rune]int {
+func CountElement(template []rune, pairs Pairs) map[rune]int {
+	countsFromPairs := map[rune]int{}
+	for pair, count := range pairs {
+		countsFromPairs[rune(pair[0])] += count
+		countsFromPairs[rune(pair[1])] += count
+	}
+
+	firstElement := template[0]
+	lastElement := template[len(template)-1]
+
 	counts := map[rune]int{}
+	for element, count := range countsFromPairs {
+		if element == firstElement {
+			count -= 1
+			counts[element] += 1
+		}
 
-	for _, cur := range tpl {
-		counts[cur] += 1
+		if element == lastElement {
+			count -= 1
+			counts[element] += 1
+		}
+
+		counts[element] += count / 2
 	}
 
 	return counts
 }
 
-func GetLeastMostValue(tpl []rune) int {
-	counts := CountElement(tpl)
+func GetLeastMostValue(template []rune, pairs Pairs) int {
+	counts := CountElement(template, pairs)
 
 	leastCommon := math.MaxInt
 	mostCommon := math.MinInt
