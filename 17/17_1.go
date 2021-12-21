@@ -31,7 +31,7 @@ func FindVelocityWithStyle(input string) int {
 				continue
 			}
 
-			hits, maxHeight := targetArea.Hits([2]int{x, y})
+			hits, maxHeight := targetArea.Hits(&[2]int{x, y})
 
 			if hits && maxHeight > totalMaxHeight {
 				totalMaxHeight = maxHeight
@@ -81,7 +81,7 @@ func ParseInput(input string) (TargetArea, error) {
 	}, nil
 }
 
-func (ta TargetArea) Hits(velocity [2]int) (bool, int) {
+func (ta *TargetArea) Hits(velocity *[2]int) (bool, int) {
 	position := [2]int{0, 0}
 
 	maxHeight := position[1]
@@ -104,7 +104,7 @@ func (ta TargetArea) Hits(velocity [2]int) (bool, int) {
 		}
 
 		// Check if in TargetArea
-		if ta.IsIn(position) {
+		if ta.IsIn(&position) {
 			return true, maxHeight
 		}
 
@@ -118,7 +118,7 @@ func (ta TargetArea) Hits(velocity [2]int) (bool, int) {
 	return false, 0
 }
 
-func (ta TargetArea) IsIn(coords [2]int) bool {
+func (ta *TargetArea) IsIn(coords *[2]int) bool {
 	return ta[0][0] <= coords[0] && // x1 <= x
 		coords[0] <= ta[1][0] && // x <= x2
 		ta[0][1] <= coords[1] && // y1 <= y

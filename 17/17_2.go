@@ -14,7 +14,7 @@ func FindAllPossibleVelocities(input string) int {
 
 	for x := minXVelocity; x <= maxXVelocity; x++ {
 		for y := minYVelocity; y <= maxYVelocity; y++ {
-			hits, _ := targetArea.Hits([2]int{x, y})
+			hits, _ := targetArea.Hits(&[2]int{x, y})
 
 			if hits {
 				count += 1
