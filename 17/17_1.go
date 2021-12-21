@@ -27,6 +27,10 @@ func FindVelocityWithStyle(input string) int {
 
 	for x := minXVelocity; x <= maxXVelocity; x++ {
 		for y := minYVelocity; y <= maxYVelocity; y++ {
+			if x > targetArea[1][0] {
+				continue
+			}
+
 			hits, maxHeight := targetArea.Hits([2]int{x, y})
 
 			if hits && maxHeight > totalMaxHeight {
