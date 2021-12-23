@@ -1,5 +1,5 @@
 package main
 
-func SolveCurrentDay(input string) int {
-  return 0
+func SolveHomework(input string) int {
+	return 0
 }
