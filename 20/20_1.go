@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 )
@@ -22,21 +23,12 @@ func EnhanceImageTwice(inputString string) int {
 	image = image.Enhance(input.ImageEnhancementAlgorithm)
 	image = image.Enhance(input.ImageEnhancementAlgorithm)
 
-	if image.Outside {
-		log.Fatalf("can not count number of infinity bits")
+	litPixels, err := image.CountLitPixels()
+	if err != nil {
+		log.Fatalf("Unable to count lit pixels: %v", err)
 	}
 
-	count := 0
-
-	for _, line := range image.Inside {
-		for _, bit := range line {
-			if bit {
-				count += 1
-			}
-		}
-	}
-
-	return count
+	return litPixels
 }
 
 func ParseInput(input string) Input {
@@ -145,4 +137,22 @@ func InputSequenceToNumber(inputSequence [9]bool) int {
 	}
 
 	return number
+}
+
+func (i Image) CountLitPixels() (int, error) {
+	if i.Outside {
+		return 0, fmt.Errorf("can not count number of infinity bits")
+	}
+
+	count := 0
+
+	for _, line := range i.Inside {
+		for _, bit := range line {
+			if bit {
+				count += 1
+			}
+		}
+	}
+
+	return count, nil
 }
