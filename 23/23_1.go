@@ -50,7 +50,6 @@ var (
 
 type Move struct {
 	AmphipodID int
-	Room       Room
 	Position   int
 }
 
@@ -64,9 +63,10 @@ func OrganizeAmphipods(input string) int {
 	finishedMoveList := [][]Move{}
 
 	for len(moveList) > 0 {
-		nextMoveList := [][]Move{}
+		log.Printf("Iteration %v | %v", len(moveList[0]), GetMemUsage())
+		log.Printf("Iteration %v | %v active move lists\t%v finished move lists", len(moveList[0]), len(moveList), len(finishedMoveList))
 
-		log.Printf("Making next move, currently we have %v move lists with depth %v", len(moveList), len(moveList[0]))
+		nextMoveList := [][]Move{}
 
 		for _, moves := range moveList {
 			currentBurrow := burrow.RunMoves(moves)
@@ -159,43 +159,48 @@ func GetAmphipodFromByte(input byte) AmphipodType {
 	return A
 }
 
+func (burrow *Burrow) MoveToRoom() (amphipodID, positionInRoom int) {
+	for id, amphipod := range *burrow {
+		if amphipod.Room != RoomHallway {
+			continue
+		}
+
+		room0 := burrow.GetAmphipodAtPosition(amphipod.Type.GetRoom(), 0)
+		room1 := burrow.GetAmphipodAtPosition(amphipod.Type.GetRoom(), 1)
+
+		if (room0 != nil && room0.Type != amphipod.Type) || (room1 != nil && room1.Type != amphipod.Type) {
+			// Room is occupied by amphipod from other type
+			// No possible move
+			continue
+		}
+
+		if !burrow.RoomIsReachable(amphipod.Type.GetRoom(), amphipod.Position) {
+			continue
+		}
+
+		if room1 != nil && room1.Type == amphipod.Type {
+			// Other amphipod is already in final position
+			// Generate move to own final position
+
+			return id, 0
+		}
+
+		if room1 == nil && room0 == nil {
+			return id, 1
+		}
+
+		continue
+	}
+
+	return -1, -1
+}
+
 func (burrow *Burrow) PossibleMoves() []Move {
 	possibleMoves := []Move{}
 
 	for id, amphipod := range burrow {
+
 		if amphipod.Room == RoomHallway {
-			room0 := burrow.GetAmphipodAtPosition(amphipod.Type.GetRoom(), 0)
-			room1 := burrow.GetAmphipodAtPosition(amphipod.Type.GetRoom(), 1)
-
-			if (room0 != nil && room0.Type != amphipod.Type) || (room1 != nil && room1.Type != amphipod.Type) {
-				// Room is occupied by amphipod from other type
-				// No possible move
-				continue
-			}
-
-			if !burrow.RoomIsReachable(amphipod.Type.GetRoom(), amphipod.Position) {
-				continue
-			}
-
-			if room1 != nil && room1.Type == amphipod.Type {
-				// Other amphipod is already in final position
-				// Generate move to own final position
-
-				possibleMoves = append(possibleMoves, Move{
-					AmphipodID: id,
-					Room:       amphipod.Type.GetRoom(),
-					Position:   0,
-				})
-			}
-
-			if room1 == nil && room0 == nil {
-				possibleMoves = append(possibleMoves, Move{
-					AmphipodID: id,
-					Room:       amphipod.Type.GetRoom(),
-					Position:   1,
-				})
-			}
-
 			continue
 		}
 
@@ -224,6 +229,8 @@ func (burrow *Burrow) PossibleMoves() []Move {
 		}
 
 		// Needs to move into hallway
+
+		// Check if amphipod has free way into hallway
 		if amphipod.Position == 1 {
 			nextSpotInRoom := burrow.GetAmphipodAtPosition(amphipod.Room, 0)
 
@@ -238,7 +245,6 @@ func (burrow *Burrow) PossibleMoves() []Move {
 		for _, hallwayPosition := range availableHallwayPositions {
 			possibleMoves = append(possibleMoves, Move{
 				AmphipodID: id,
-				Room:       RoomHallway,
 				Position:   hallwayPosition,
 			})
 		}
@@ -358,8 +364,19 @@ func (b Burrow) RunMoves(moves []Move) Burrow {
 	burrow := b.Copy()
 
 	for _, move := range moves {
-		burrow[move.AmphipodID].Room = move.Room
+		burrow[move.AmphipodID].Room = RoomHallway
 		burrow[move.AmphipodID].Position = move.Position
+
+		for {
+			amphipodID, positionInRoom := burrow.MoveToRoom()
+
+			if amphipodID == -1 {
+				break
+			}
+
+			burrow[amphipodID].Room = burrow[amphipodID].Type.GetRoom()
+			burrow[amphipodID].Position = positionInRoom
+		}
 	}
 
 	return burrow
@@ -373,20 +390,25 @@ func CalculateCosts(burrow Burrow, moves []Move) int {
 	for _, move := range moves {
 		amphipod := burrow[move.AmphipodID]
 
-		steps := 0
-		if move.Room == RoomHallway {
-			// room -> hallway
-			steps = amphipod.Position + 1 + int(math.Abs(float64(move.Position-roomPositions[amphipod.Room])))
-		} else {
-			// hallway -> room
-			steps = int(math.Abs(float64(amphipod.Position-roomPositions[move.Room]))) + move.Position + 1
-		}
-
+		totalCost += amphipod.Position + 1 + int(math.Abs(float64(move.Position-roomPositions[amphipod.Room])))*costsPerStep[amphipod.Type]
 		// Update burrow
-		burrow[move.AmphipodID].Room = move.Room
+		burrow[move.AmphipodID].Room = RoomHallway
 		burrow[move.AmphipodID].Position = move.Position
 
-		totalCost += steps * costsPerStep[amphipod.Type]
+		for {
+			amphipodID, positionInRoom := burrow.MoveToRoom()
+
+			if amphipodID == -1 {
+				break
+			}
+
+			amphipod = burrow[amphipodID]
+
+			totalCost += (int(math.Abs(float64(amphipod.Position-roomPositions[amphipod.Type.GetRoom()]))) + positionInRoom + 1) * costsPerStep[amphipod.Type]
+
+			burrow[amphipodID].Room = amphipod.Type.GetRoom()
+			burrow[amphipodID].Position = positionInRoom
+		}
 	}
 
 	return totalCost

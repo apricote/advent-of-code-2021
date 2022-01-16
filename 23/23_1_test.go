@@ -8,6 +8,24 @@ import (
 	"github.com/apricote/advent-of-code-2021/util"
 )
 
+func TestBurrowRunMoves(t *testing.T) {
+	type test struct {
+		burrow Burrow
+		moves  []Move
+		want   Burrow
+	}
+
+	tests := []test{}
+
+	for _, tc := range tests {
+		got := tc.burrow.RunMoves(tc.moves)
+
+		if !reflect.DeepEqual(tc.want, got) {
+			t.Errorf("Expected %v but got %v", tc.want, got)
+		}
+	}
+}
+
 func TestOrganizeAmphipods(t *testing.T) {
 	type test struct {
 		input string
